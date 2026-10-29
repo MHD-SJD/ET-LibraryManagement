@@ -159,7 +159,7 @@ export const BookDetails = () => {
               <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-cyan-50/50 to-indigo-50/60 border border-blue-100/90 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-brand-700">
                   <Sparkles className="w-4 h-4 text-brand-600 animate-pulse" />
-                  <span>DanumaLK AI Executive Takeaway</span>
+                  <span>AuraLib LK AI Executive Takeaway</span>
                 </div>
                 <p className="text-xs sm:text-sm text-navy-900 leading-relaxed font-medium">
                   "{book.aiSummary}"

@@ -1,124 +1,50 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { DEMO_ADMIN, DEMO_MEMBER } from '../data/mockUsers';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { apiRequest } from '../lib/api';
+import { auth } from '../lib/firebase';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('auralib_auth_user');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.name === 'Julian Thorne' || parsed.name === 'Dr. Eleanor Vance') {
-          return DEMO_MEMBER;
-        }
-        return parsed;
-      }
-    } catch (e) {
-      console.error('Failed to parse saved user', e);
-    }
-    // Default to null so new sessions start logged out and see Sign In / Login
-    return null;
-  });
-
-  useEffect(() => {
-    try {
-      if (user) {
-        localStorage.setItem('auralib_auth_user', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('auralib_auth_user');
-      }
-    } catch (e) {
-      console.error('Failed to save user', e);
-    }
-  }, [user]);
-
-  const loginDemo = (role = 'member') => {
-    if (role === 'admin') {
-      setUser(DEMO_ADMIN);
-      return DEMO_ADMIN;
-    } else {
-      setUser(DEMO_MEMBER);
-      return DEMO_MEMBER;
-    }
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const syncProfile = async (firebaseUser, details) => {
+    const token = await firebaseUser.getIdToken();
+    const profile = await apiRequest('/users/me', { method: 'POST', token });
+    return details ? apiRequest('/users/me', { method: 'PATCH', token, body: details }) : profile;
   };
 
-  const login = ({ email, password, role = 'member' }) => {
-    if (role === 'admin') {
-      const adminUser = {
-        ...DEMO_ADMIN,
-        email: email || DEMO_ADMIN.email
-      };
-      setUser(adminUser);
-      return { success: true, user: adminUser };
-    } else {
-      const memberUser = {
-        ...DEMO_MEMBER,
-        name: email.split('@')[0].replace('.', ' ').replace(/^./, str => str.toUpperCase()),
-        email: email || DEMO_MEMBER.email,
-        role: 'member'
-      };
-      setUser(memberUser);
-      return { success: true, user: memberUser };
-    }
+  useEffect(() => onAuthStateChanged(auth, async (firebaseUser) => {
+    if (!firebaseUser) { setUser(null); setLoading(false); return; }
+    try { setUser(await syncProfile(firebaseUser)); }
+    catch (error) { console.error('Unable to load library profile:', error); setUser(null); }
+    finally { setLoading(false); }
+  }), []);
+
+  const login = async ({ email, password }) => {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    const profile = await syncProfile(credential.user);
+    setUser(profile);
+    return profile;
+  };
+  const register = async ({ name, email, password, phone, address }) => {
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(credential.user, { displayName: name });
+    const profile = await syncProfile(credential.user, { name, phone, address });
+    setUser(profile);
+    return profile;
+  };
+  const updateLibraryProfile = async (details) => {
+    const profile = await apiRequest('/users/me', { method: 'PATCH', token: await auth.currentUser.getIdToken(), body: details });
+    setUser(profile);
+    return profile;
   };
 
-  const register = (registrationData) => {
-    const newUser = {
-      id: `user-member-${Date.now()}`,
-      name: registrationData.name,
-      email: registrationData.email,
-      role: 'member',
-      membershipId: `AL-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      avatar: `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 1000)}?auto=format&fit=crop&q=80&w=200`,
-      phone: registrationData.phone || '+1 (555) 000-0000',
-      address: registrationData.address || 'Member Residence',
-      joinedDate: new Date().toISOString().split('T')[0],
-      status: 'Active',
-      maxBorrowLimit: 5
-    };
-    setUser(newUser);
-    return { success: true, user: newUser };
-  };
-
-  const logout = () => {
-    setUser(null);
-  };
-
-  const switchRole = (newRole) => {
-    if (newRole === 'admin') {
-      setUser(DEMO_ADMIN);
-    } else {
-      setUser(DEMO_MEMBER);
-    }
-  };
-
-  const isAuthenticated = !!user;
-  const isAdmin = user?.role === 'admin';
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        isAdmin,
-        role: user?.role || 'guest',
-        loginDemo,
-        login,
-        register,
-        logout,
-        switchRole,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, loading, isAuthenticated: Boolean(user), isAdmin: user?.role === 'admin', role: user?.role || 'guest', login, register, updateLibraryProfile, logout: () => signOut(auth), getToken: () => auth.currentUser?.getIdToken() }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

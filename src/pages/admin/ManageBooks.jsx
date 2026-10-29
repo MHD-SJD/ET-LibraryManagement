@@ -29,6 +29,7 @@ export const ManageBooks = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [deletingBookId, setDeletingBookId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -54,7 +55,7 @@ export const ManageBooks = () => {
         !searchTerm.trim() ||
         b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        b.isbn.toLowerCase().includes(searchTerm.toLowerCase());
+        (b.isbn || '').toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchCategory = categoryFilter === 'All' || b.category === categoryFilter;
 
@@ -122,16 +123,27 @@ export const ManageBooks = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    if (editingBook) {
-      updateBook(editingBook.id, formData);
-    } else {
-      addBook(formData);
+    const payload = {
+      ...formData,
+      publicationYear: Number(formData.publicationYear),
+      totalCopies: Number(formData.totalCopies),
+      availableCopies: Number(formData.availableCopies),
+      rating: Number(formData.rating),
+      reviewsCount: Number(formData.reviewsCount),
+      tags: String(formData.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean),
+    };
+    setIsSaving(true);
+    const result = editingBook
+      ? await updateBook(editingBook.id, payload)
+      : await addBook(payload);
+    setIsSaving(false);
+    if (result.success) {
+      setIsFormModalOpen(false);
     }
-    setIsFormModalOpen(false);
   };
 
   return (
@@ -412,9 +424,10 @@ export const ManageBooks = () => {
             </button>
             <button
               type="submit"
+              disabled={isSaving}
               className="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all cursor-pointer"
             >
-              {editingBook ? 'Save Changes' : 'Create Book Entry'}
+              {isSaving ? 'Saving…' : (editingBook ? 'Save Changes' : 'Create Book Entry')}
             </button>
           </div>
         </form>

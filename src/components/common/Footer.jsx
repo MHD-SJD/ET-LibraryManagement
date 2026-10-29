@@ -16,7 +16,7 @@ export const Footer = () => {
             <Link to="/" className="flex items-center gap-3">
               <img
                 src={logoImg || '/logo.jpg'}
-                alt="DanumaLK Logo"
+                alt="AuraLib LK Logo"
                 onError={(e) => {
                   if (!e.target.src.endsWith('/logo.jpg')) {
                     e.target.src = '/logo.jpg';
@@ -25,7 +25,7 @@ export const Footer = () => {
                 className="w-10 h-10 rounded-xl object-contain bg-white shadow-lg p-0.5"
               />
               <span className="text-xl font-bold tracking-tight text-white">
-                Danuma<span className="text-brand-400">LK</span>
+                AuraLib<span className="text-brand-400"> LK</span>
               </span>
             </Link>
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">

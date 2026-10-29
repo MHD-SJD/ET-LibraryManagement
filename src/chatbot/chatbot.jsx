@@ -22,7 +22,7 @@ const INITIAL_MESSAGES = [
   {
     id: 'msg-1',
     sender: 'bot',
-    text: "Hello! 👋 I'm your DanumaLK AI Reading Assistant (Prototype). I can help you discover books from our catalog, map out reading pathways, or check your current borrowing progress. How can I assist you today?",
+    text: "Hello! 👋 I'm your AuraLib LK AI Reading Assistant (Prototype). I can help you discover books from our catalog, map out reading pathways, or check your current borrowing progress. How can I assist you today?",
     timestamp: 'Just now'
   }
 ];
@@ -112,7 +112,7 @@ export const FloatingChatbot = () => {
           .join('\n\n');
 
         return {
-          text: `Here are our top curated recommendations from the DanumaLK catalog:\n\n${bookDetails}\n\nAll titles are in stock and ready to borrow!`,
+          text: `Here are our top curated recommendations from the AuraLib LK catalog:\n\n${bookDetails}\n\nAll titles are in stock and ready to borrow!`,
           actionLink: { label: 'Browse Full Catalog', url: '/catalog' }
         };
       }
@@ -193,7 +193,7 @@ export const FloatingChatbot = () => {
     // 7. Library Hours, Rules, or Contact
     if (q.includes('hour') || q.includes('time') || q.includes('open') || q.includes('contact') || q.includes('rule') || q.includes('fine')) {
       return {
-        text: `🏢 DanumaLK Library Information:\n\n• Operating Hours: ${settings?.operatingHours || 'Mon-Sat: 08:00 - 20:00'}\n• Standard Loan: ${settings?.loanDurationDays || 14} days per loan\n• Max Borrow Limit: ${settings?.maxBorrowLimit || 5} books\n• Overdue Rate: LKR ${settings?.finePerDay || '20.00'}/day\n• Support Contact: ${settings?.contactEmail || 'support@auralib.lk'}`
+        text: `🏢 AuraLib LK Library Information:\n\n• Operating Hours: ${settings?.operatingHours || 'Mon-Sat: 08:00 - 20:00'}\n• Standard Loan: ${settings?.loanDurationDays || 14} days per loan\n• Max Borrow Limit: ${settings?.maxBorrowLimit || 5} books\n• Overdue Rate: LKR ${settings?.finePerDay || '20.00'}/day\n• Support Contact: ${settings?.contactEmail || 'support@auralib.lk'}`
       };
     }
 

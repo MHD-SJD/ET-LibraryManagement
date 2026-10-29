@@ -27,7 +27,7 @@ export const AdminTopNav = ({ onMobileMenuOpen, title = "Admin Dashboard" }) => 
             {title}
           </h1>
           <p className="text-[11px] text-slate-500 hidden sm:block">
-            DanumaLK Integrated Library System • v2.4
+            AuraLib LK Integrated Library System • v2.4
           </p>
         </div>
       </div>

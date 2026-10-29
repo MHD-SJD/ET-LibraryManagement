@@ -1,6 +1,6 @@
 # AuraLib — AI Smart Public Library System
 
-A modern, responsive, frontend-only web application for an **AI Smart Public Library System** built with **React.js**, **Vite**, **Tailwind CSS**, **React Router v7**, **Lucide Icons**, and **Recharts**.
+A full-stack **AI Smart Public Library System** built with React, FastAPI, Firebase Authentication, Cloud Firestore, and scikit-learn.
 
 ---
 
@@ -83,7 +83,10 @@ A modern, responsive, frontend-only web application for an **AI Smart Public Lib
 - **Routing**: React Router DOM v7
 - **Icons**: Lucide React
 - **Charts**: Recharts
-- **Data Persistence**: HTML5 `localStorage` (persists all CRUD and loan actions across reloads)
+- **Authentication**: Firebase Authentication
+- **Cloud database**: Cloud Firestore
+- **Backend**: Python FastAPI
+- **AI recommendation**: scikit-learn TF-IDF and cosine similarity
 
 ---
 
@@ -94,26 +97,23 @@ A modern, responsive, frontend-only web application for an **AI Smart Public Lib
 npm install
 ```
 
-### 2. Run the Development Server
+### 2. Configure Firebase and the API
+
+Copy `.env.example` to `.env.local` and fill in the Firebase web-app configuration from Firebase Console. Then follow [the backend setup guide](backend/README.md) to configure the service account and start FastAPI.
+
+### 3. Run the Development Server
 ```bash
 npm run dev
 ```
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 3. Production Build
+### 4. Production Build
 ```bash
 npm run build
 ```
 
 ---
 
-## 🔑 Demo Accounts
-- **Member Persona**:
-  - Name: `Julian Thorne`
-  - Email: `julian.t@example.com`
-  - Role: `member`
-- **Librarian / Admin Persona**:
-  - Name: `Dr. Eleanor Vance`
-  - Email: `admin@auralib.org`
-  - Role: `admin`
-*(You can also click the "Role: Member / Admin" button in the top navigation bar at any time to toggle perspectives instantly!)*
+## 🔑 Roles
+
+New registrations are members. To make a librarian, register their account, then set `role` to `admin` in its Firestore `users/{uid}` document, as described in the backend guide. Role selection in the login screen does not grant permissions; the backend enforces the stored role.

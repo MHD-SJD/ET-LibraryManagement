@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logoImg from '../assets/logo.jpg';
 import { useAuth } from '../context/AuthContext';
-import { useLibrary } from '../context/LibraryContext';
 import { useToast } from '../context/ToastContext';
 import { BookOpen, UserPlus, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 
 export const Register = () => {
   const { register } = useAuth();
-  const { addMember } = useLibrary();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -17,6 +15,7 @@ export const Register = () => {
     email: '',
     phone: '',
     address: '',
+    password: '',
     agreeTerms: true
   });
   const [errors, setErrors] = useState({});
@@ -30,30 +29,21 @@ export const Register = () => {
       errs.email = 'Please provide a valid email format.';
     }
     if (!formData.phone.trim()) errs.phone = 'Phone number is required.';
+    if (formData.password.length < 6) errs.password = 'Password must contain at least 6 characters.';
     if (!formData.agreeTerms) errs.agreeTerms = 'You must accept the library terms.';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Register user in Auth
-    const res = register(formData);
-
-    // Also register member into library members state
-    addMember({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      address: formData.address,
-      status: 'Active',
-      maxBorrowLimit: 5
-    });
-
-    showToast(`Welcome to DanumaLK, ${formData.name}! Your digital card has been issued.`, 'success');
-    navigate('/my-books');
+    try {
+      await register(formData);
+      showToast(`Welcome to AuraLib LK, ${formData.name}! Your digital card has been issued.`, 'success');
+      navigate('/my-books');
+    } catch (error) { showToast(error.message || 'Unable to create your account.', 'error'); }
   };
 
   return (
@@ -63,11 +53,11 @@ export const Register = () => {
         <div className="text-center space-y-2">
           <img
             src={logoImg}
-            alt="DanumaLK Logo"
+            alt="AuraLib LK Logo"
             className="w-14 h-14 rounded-2xl object-contain bg-white mx-auto shadow-md border border-slate-100 p-1"
           />
           <h1 className="text-2xl font-extrabold text-navy-950 tracking-tight">
-            Apply for DanumaLK Membership
+            Apply for AuraLib LK Membership
           </h1>
           <p className="text-xs text-slate-500">
             Get instant access to thousands of books and borrowing privileges
@@ -119,6 +109,12 @@ export const Register = () => {
                 />
                 {errors.phone && <p className="text-[11px] text-rose-500 mt-1">{errors.phone}</p>}
               </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-navy-900 block mb-1">Password</label>
+              <input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder="At least 6 characters" className={`w-full px-3.5 py-2.5 text-xs rounded-xl border ${errors.password ? 'border-rose-300 bg-rose-50/20' : 'border-slate-200'} focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500`} />
+              {errors.password && <p className="text-[11px] text-rose-500 mt-1">{errors.password}</p>}
             </div>
 
             <div>

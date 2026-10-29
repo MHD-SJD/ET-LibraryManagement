@@ -16,10 +16,9 @@ import {
   CheckCircle2,
   Sliders
 } from 'lucide-react';
-import { DEMO_ADMIN } from '../../data/mockUsers';
 
 export const AdminSettings = () => {
-  const { user } = useAuth();
+  const { user, updateLibraryProfile } = useAuth();
   const { settings, updateSettings, resetToDefaults } = useLibrary();
   const { showToast } = useToast();
 
@@ -27,11 +26,11 @@ export const AdminSettings = () => {
 
   // Form states
   const [profileData, setProfileData] = useState({
-    name: DEMO_ADMIN.name,
-    title: DEMO_ADMIN.title,
-    email: DEMO_ADMIN.email,
-    department: DEMO_ADMIN.department,
-    phone: DEMO_ADMIN.phone
+    name: user?.name || '',
+    title: user?.title || 'Chief Librarian',
+    email: user?.email || '',
+    department: user?.department || 'AuraLib National Smart Library',
+    phone: user?.phone || ''
   });
 
   const [systemSettings, setSystemSettings] = useState({
@@ -44,9 +43,12 @@ export const AdminSettings = () => {
     emailNotifications: settings.emailNotifications ?? true
   });
 
-  const handleProfileSave = (e) => {
+  const handleProfileSave = async (e) => {
     e.preventDefault();
-    showToast('Administrator profile updated successfully!', 'success');
+    try {
+      await updateLibraryProfile(profileData);
+      showToast('Administrator profile updated successfully!', 'success');
+    } catch (error) { showToast(error.message || 'Unable to update the profile.', 'error'); }
   };
 
   const handleSettingsSave = (e) => {
@@ -75,8 +77,8 @@ export const AdminSettings = () => {
 
           <div className="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
             <img
-              src={DEMO_ADMIN.avatar}
-              alt={DEMO_ADMIN.name}
+              src={user?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200'}
+              alt={profileData.name}
               className="w-20 h-20 rounded-2xl object-cover ring-4 ring-brand-500/20 shadow-sm mb-3"
             />
             <h3 className="font-extrabold text-navy-950 text-base">{profileData.name}</h3>
@@ -296,7 +298,7 @@ export const AdminSettings = () => {
         onClose={() => setResetModalOpen(false)}
         onConfirm={resetToDefaults}
         title="Reset All Mock Data to Defaults?"
-        message="This action will overwrite your current books, borrowing logs, and member records stored in your browser's localStorage."
+        message="This action restores the server-side library configuration defaults. It does not change books, members, or borrowing records."
         confirmText="Confirm Factory Reset"
         type="danger"
       />
