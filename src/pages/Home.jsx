@@ -80,7 +80,7 @@ export const Home = () => {
           </h1>
 
           <p className="mt-5 text-base sm:text-lg text-navy-950 max-w-2xl mx-auto leading-relaxed font-bold drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
-            Welcome to DanumaLK. Browse curated physical and digital library collections, borrow books, and manage loans in seconds.
+            Welcome to AuraLib LK. Browse curated physical and digital library collections, borrow books, and manage loans in seconds.
           </p>
 
           {/* Hero Search Bar */}

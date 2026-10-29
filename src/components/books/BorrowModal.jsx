@@ -12,10 +12,10 @@ export const BorrowModal = ({ isOpen, onClose, book }) => {
 
   if (!book) return null;
 
-  const handleBorrow = (e) => {
+  const handleBorrow = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const result = requestBorrow(book.id, notes);
+    const result = await requestBorrow(book.id, notes);
     setIsSubmitting(false);
     if (result.success) {
       setNotes('');

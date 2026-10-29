@@ -4,7 +4,6 @@ import logoImg from '../assets/logo.jpg';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { LogIn, ShieldAlert } from 'lucide-react';
-import { DEMO_ADMIN, DEMO_MEMBER } from '../data/mockUsers';
 
 export const Login = () => {
   const { login } = useAuth();
@@ -15,16 +14,15 @@ export const Login = () => {
 
   const isAdminRequested = searchParams.get('role') === 'admin' || location.state?.from?.startsWith?.('/admin');
 
-  const [role, setRole] = useState(isAdminRequested ? 'admin' : 'member');
-  const [email, setEmail] = useState(isAdminRequested ? DEMO_ADMIN.email : '');
-  const [password, setPassword] = useState(isAdminRequested ? 'admin123' : '');
+  const [role, setRole] = useState('admin');
+  const [email, setEmail] = useState('admin@auralib.lk');
+  const [password, setPassword] = useState('Admin@123');
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (isAdminRequested) {
       setRole('admin');
-      setEmail(DEMO_ADMIN.email);
-      setPassword('admin123');
     }
   }, [isAdminRequested]);
 
@@ -44,15 +42,18 @@ export const Login = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    login({ email, password, role });
-    showToast(`Signed in successfully as ${role === 'admin' ? 'Librarian/Admin' : 'Member'}!`, 'success');
-
-    const redirectPath = location.state?.from || (role === 'admin' ? '/admin' : '/my-books');
-    navigate(redirectPath);
+    setSubmitting(true);
+    try {
+      const profile = await login({ email, password });
+      showToast(`Signed in successfully as ${profile.role === 'admin' ? 'Librarian/Admin' : 'Member'}!`, 'success');
+      navigate(location.state?.from || (profile.role === 'admin' ? '/admin' : '/my-books'));
+    } catch (error) {
+      showToast(error.message || 'Unable to sign in.', 'error');
+    } finally { setSubmitting(false); }
   };
 
   return (
@@ -62,11 +63,11 @@ export const Login = () => {
         <div className="text-center space-y-2">
           <img
             src={logoImg}
-            alt="DanumaLK Logo"
+            alt="AuraLib LK Logo"
             className="w-14 h-14 rounded-2xl object-contain bg-white mx-auto shadow-md border border-slate-100 p-1"
           />
           <h1 className="text-2xl font-extrabold text-navy-950 tracking-tight">
-            {isAdminRequested ? 'Librarian & Admin Portal Sign In' : 'Sign In to DanumaLK'}
+            {isAdminRequested ? 'Librarian & Admin Portal Sign In' : 'Sign In to AuraLib LK'}
           </h1>
           <p className="text-xs text-slate-500">
             {isAdminRequested
@@ -93,14 +94,15 @@ export const Login = () => {
           {/* Role selector pill */}
           <div>
             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
-              Select Demo Role
+              Portal Type
             </label>
             <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl border border-slate-200/80">
               <button
                 type="button"
                 onClick={() => {
                   setRole('member');
-                  setEmail(DEMO_MEMBER.email);
+                  setEmail('');
+                  setPassword('');
                 }}
                 className={`py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                   role === 'member'
@@ -114,7 +116,8 @@ export const Login = () => {
                 type="button"
                 onClick={() => {
                   setRole('admin');
-                  setEmail(DEMO_ADMIN.email);
+                  setEmail('admin@auralib.lk');
+                  setPassword('Admin@123');
                 }}
                 className={`py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                   role === 'admin'
@@ -126,6 +129,12 @@ export const Login = () => {
               </button>
             </div>
           </div>
+
+          {role === 'admin' && (
+            <p className="text-[11px] text-slate-500 bg-blue-50 border border-blue-100 rounded-lg p-2.5">
+              Prototype admin account: <strong>admin@auralib.lk</strong> / <strong>Admin@123</strong>
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -145,7 +154,7 @@ export const Login = () => {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-bold text-navy-900">Password</label>
-                <span className="text-[10px] text-slate-400">Demo (any 6+ chars)</span>
+                <span className="text-[10px] text-slate-400">Your Firebase password</span>
               </div>
               <input
                 type="password"
@@ -163,10 +172,11 @@ export const Login = () => {
 
             <button
               type="submit"
+              disabled={submitting}
               className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <LogIn className="w-4 h-4" />
-              Sign In to Account
+              {submitting ? 'Signing In…' : 'Sign In to Account'}
             </button>
           </form>
 

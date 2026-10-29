@@ -5,7 +5,6 @@ import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { StatusBadge } from '../../components/common/Badge';
 import {
   Users,
-  UserPlus,
   Search,
   Edit2,
   Trash2,
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export const ManageMembers = () => {
-  const { members, borrowings, addMember, updateMember, deleteMember, toggleMemberStatus } = useLibrary();
+  const { members, borrowings, updateMember, deleteMember, toggleMemberStatus } = useLibrary();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -100,17 +99,13 @@ export const ManageMembers = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    if (editingMember) {
-      updateMember(editingMember.id, formData);
-    } else {
-      addMember(formData);
-    }
+    if (editingMember) updateMember(editingMember.id, formData);
     setIsModalOpen(false);
   };
 
   return (
     <div className="space-y-6">
-      {/* Header and Add Action */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-navy-950 tracking-tight">
@@ -121,13 +116,6 @@ export const ManageMembers = () => {
           </p>
         </div>
 
-        <button
-          onClick={openAddModal}
-          className="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer self-start sm:self-auto"
-        >
-          <UserPlus className="w-4 h-4" />
-          Register New Member
-        </button>
       </div>
 
       {/* Toolbar */}

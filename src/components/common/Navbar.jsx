@@ -42,7 +42,7 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center gap-3 group shrink-0">
             <img
               src={logoImg || '/logo.jpg'}
-              alt="DanumaLK Logo"
+              alt="AuraLib LK Logo"
               onError={(e) => {
                 if (!e.target.src.endsWith('/logo.jpg')) {
                   e.target.src = '/logo.jpg';
@@ -52,7 +52,7 @@ export const Navbar = () => {
             />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-extrabold tracking-tight text-navy-900">Danuma</span>
+                <span className="text-xl font-extrabold tracking-tight text-navy-900">AuraLib</span>
                 <span className="text-xl font-extrabold tracking-tight text-brand-600">LK</span>
                 <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-brand-600 to-cyan-600 text-white rounded">
                   AI Smart

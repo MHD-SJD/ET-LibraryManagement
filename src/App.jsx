@@ -15,6 +15,7 @@ import { BookDetails } from './pages/BookDetails';
 import { MyBooks } from './pages/MyBooks';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Recommendations } from './pages/Recommendations';
 import { NotFound } from './pages/NotFound';
 
 // Admin Pages
@@ -40,7 +41,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/catalog" element={<Catalog />} />
                 <Route path="/books/:id" element={<BookDetails />} />
-                <Route path="/recommendations" element={<Navigate to="/catalog" replace />} />
+                <Route path="/recommendations" element={<Recommendations />} />
                 <Route path="/my-books" element={<MyBooks />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

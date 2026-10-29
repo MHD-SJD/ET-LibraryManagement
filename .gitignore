@@ -8,6 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+backend/.env
+backend/.venv/
+backend/serviceAccountKey.json
+__pycache__/
+*.pyc
 dist
 dist-ssr
 *.local

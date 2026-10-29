@@ -45,12 +45,12 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsM
           <Link to="/admin" className="flex items-center gap-2.5">
             <img
               src={logoImg}
-              alt="DanumaLK Logo"
+              alt="AuraLib LK Logo"
               className="w-9 h-9 rounded-xl object-contain bg-white border border-slate-100 shadow-sm p-0.5"
             />
             <div>
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-navy-900 tracking-tight text-base">Danuma</span>
+                <span className="font-extrabold text-navy-900 tracking-tight text-base">AuraLib</span>
                 <span className="font-extrabold text-brand-600 tracking-tight text-base">LK</span>
               </div>
               <p className="text-[10px] text-slate-400 font-medium">Librarian Operations</p>
@@ -62,7 +62,7 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsM
           <div className="mx-auto">
             <img
               src={logoImg}
-              alt="DanumaLK Logo"
+              alt="AuraLib LK Logo"
               className="w-8 h-8 rounded-xl object-contain bg-white border border-slate-100 shadow-sm p-0.5"
             />
           </div>
